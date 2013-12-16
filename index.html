@@ -77,19 +77,54 @@
             <section>
                 <h3>preface: <br/>building heroku on heroku</h3>
                 <p>we try to the extent possible to build Heroku on Heroku</p>
-                <p class="fragment">we call this ongoing effort: ephemeralization</p>
-                <p class="fragment">all of our Play! services fall into this category</p>
+            </section>
+
+            <section>
+                <h3>preface: <br/>building heroku on heroku</h3>
+                <p>we call this ongoing effort: ephemeralization</p>
+                <p><img src="images/ephemeral.jpg"/></p>
+            </section>
+
+            <section>
+                <h3>preface: <br/>building heroku on heroku</h3>
+                <p>we try to the extent possible to build Heroku on Heroku</p>
+                <p>we call this ongoing effort: ephemeralization</p>
+                <p>all of our Play! services fall into this category</p>
             </section>
 
             <section>
                 <h3>preface: the 12 factor app</h3>
                 <p>this talk touches on several of the concepts described in <a href="http://12factor.net/">http://12factor.net/</a></p>
-                <p class="fragment">In particular</p>
-                <ul class="fragment">
-                <li>III. Store config in the environment</li>
-                <li>X. Keep development, staging, and production as similar as possible</li>
-                <li>XI. Treat logs as event streams</li>
+            </section>
+
+            <section>
+                <h3>The Twelve Factors</h3>
+                <h4>1-6</h4>
+                <ul>
+                    <li>Codebase: One codebase tracked in revision control, many deploys</li>
+                    <li>Dependencies: Explicitly declare and isolate dependencies</li>
+                    <li>Config: Store config in the environment</li>
+                    <li>Backing Services: Treat backing services as attached resources</li>
+                    <li>Build, release, run: Strictly separate build and run stages</li>
+                    <li>Processes: Execute the app as one or more stateless processes</li>
                 </ul>
+            </section>
+            <section>
+                <h3>The Twelve Factors</h3>
+                <h4>7-12</h4>
+                <ul>
+                    <li>Port binding: Export services via port binding</li>
+                    <li>Concurrency: Scale out via the process model</li>
+                    <li>Disposability: Maximize robustness with fast startup and graceful shutdown</li>
+                    <li>Dev/prod parity: Keep development, staging, and production as similar as possible</li>
+                    <li>Logs: Treat logs as event streams</li>
+                    <li>Admin processes: Run admin/management tasks as one-off processes</li>
+                </ul>
+            </section>
+
+            <section>
+                <h3>preface: basic tools</h3>
+                <p><img src="images/tools.jpg"/></p>
             </section>
 
             <section>
@@ -128,13 +163,31 @@ foo: foooo bar: barrr
             </section>
 
             <section>
-                <h3>on with it!</h3>
+                <h3>preface: basic tools</h3>
+                <p><a href="https://github.com/ddollar/heroku-config">heroku config plugin</a></p>
+              <pre><code data-trim>
+heroku config:pull -o -a app-dev
+//pull the config from app-dev and write it to your .env
+heroku config:push -o -a app-dev
+//write your .env to the config vars of the app
+              </code></pre>
+            </section>
+
+            <section>
+                <h3>on with it! (todo night theme switch)</h3>
                 <ul>
-                    <li>Continuous Deployment</li>
+                    <li><h3>Continuous Deployment</h3></li>
                     <li>Functionality not fully provided by Play!</li>
                     <li>Visibility</li>
                 </ul>
             </section>
+
+            <section>
+                <h3>Continuous Deployment</h3>
+                <p>Pipelines!</p>
+                <p><img src="images/pipeline.jpg"/></p>
+            </section>
+
 
             <section>
                 <h3>Continuous Deployment</h3>
@@ -189,8 +242,39 @@ foo: foooo bar: barrr
                 <p>heroku pipeline:promote -a app-staging</p>
                 <p>thats it!</p>
             </section>
-            <section>
 
+            <section>
+                <h3>on with it! (todo night theme switch)</h3>
+                <ul>
+                    <li>Continuous Deployment</li>
+                    <li><h3>Functionality not fully provided by Play!</h3></li>
+                    <li>Visibility</li>
+                </ul>
+            </section>
+
+            <section>
+                <h3>Functionality not fully provided by Play!</h3>
+                <p class="fragment"></p>
+                <p class="fragment"></p>
+                <p class="fragment"></p>
+                <p class="fragment"></p>
+                <p class="fragment"></p>
+            </section>
+            <section>
+                <h3></h3>
+                <p class="fragment"></p>
+                <p class="fragment"></p>
+                <p class="fragment"></p>
+                <p class="fragment"></p>
+                <p class="fragment"></p>
+            </section>
+            <section>
+                <h3></h3>
+                <p class="fragment"></p>
+                <p class="fragment"></p>
+                <p class="fragment"></p>
+                <p class="fragment"></p>
+                <p class="fragment"></p>
             </section>
             <section>
                 <h3></h3>
@@ -222,10 +306,12 @@ foo: foooo bar: barrr
             prod deploy -> heroku pipeline:promote -a app-staging
 
 
+            controller trait object extend, tests
 
             Functionality not fully provided by Play!
             Background/Batch jobs
-            Evolutions and Migrations
+            Evolutions
+            Migrations => procfile spin up play MigrationProcess
             Credentials handling/Encryption
 
 
@@ -241,6 +327,7 @@ foo: foooo bar: barrr
 				<section>
 					<h1>THANK YOU!</h1>
 					<h3>Questions?</h3>
+                    <p>images from http://www.flickr.com/creativecommons/by-2.0/</p>
 				</section>
 
 			</div>
