@@ -137,8 +137,8 @@
             <section>
                 <h3>Procfile</h3>
                 <pre><code data-trim>
-web:           bin/cloudplay -Dapplication.global=Web
-continuous:    bin/cloudplay -Dapplication.global=Continuous
+web:           bin/web
+continuous:    bin/continuous
                 </code></pre>
                 <pre><code data-trim>
 $ forego start web
@@ -173,7 +173,7 @@ heroku config:push -o -a app-dev
               </code></pre>
             </section>
 
-            <section>
+            <section data-background="#111111" data-color="#ffffff">
                 <h3>on with it! (todo night theme switch)</h3>
                 <ul>
                     <li><h3>Continuous Deployment</h3></li>
@@ -254,11 +254,63 @@ heroku config:push -o -a app-dev
 
             <section>
                 <h3>Functionality not fully provided by Play!</h3>
-                <p class="fragment"></p>
-                <p class="fragment"></p>
-                <p class="fragment"></p>
-                <p class="fragment"></p>
-                <p class="fragment"></p>
+                <p class="fragment">Batch/Background Processing</p>
+                <p class="fragment">Evolutions/Migrations</p>
+                <p class="fragment">Credentials Handling/Encryption</p>
+            </section>
+            <section>
+                <h3>Batch/Background Processing</h3>
+                <p><img src="images/gears.jpg"/></p>
+            </section>
+            <section>
+                <h3>Batch/Background Processing</h3>
+                <p>How to keep things as simple as possible?</p>
+                <p class="fragment">-Dapplication.global FTW</p>
+                <p class="fragment">You have all your models, services, logic</p>
+                <p class="fragment">you have play akka etc</p>
+            </section>
+            <section>
+                <h3>Batch/Background Processing</h3>
+                <p>How to keep things as simple as possible?</p>
+                <p class="fragment">-Dapplication.global FTW</p>
+                <p class="fragment">You have all your models, services, logic</p>
+                <p class="fragment">you have play akka etc</p>
+            </section>
+            <section>
+                <h3>Batch/Background Processing</h3>
+                <pre><code data-trim>
+web:           bin/cloudplay -Dapplication.global=Web
+continuous:    bin/cloudplay -Dapplication.global=Continuous
+                </code></pre>
+            </section>
+            <section>
+                <h3>Batch/Background Processing</h3>
+                <pre><code data-trim>
+trait ProcessType extends GlobalSettings {
+ ...
+}
+object Web extends ProcessType  {
+    override def onStart(app: Application) = {
+        log.info("Starting ProcessType: Web")
+        start(app, "web")
+    }
+}
+
+object Continuous extends ProcessType {
+    override def onStart(app: Application) = {
+        log.info("Starting ProcessType: Continuous")
+        start(app, "continuous")
+        processes.ContinuousProcess.start()
+    }
+}
+                </code></pre>
+            </section>
+            <section>
+                <h3>Batch/Background Processing</h3>
+                <p>Ok, great whats in this processes.ContinuousProcess.start() business?</p>
+                <p class="fragment">Lets call it an 'actor batch process'</p>
+                <p class="fragment">Run multiple instances, using <a target="_blank" href="https://github.com/sclasen/cloudplay/blob/master/app/services/LockService.scala">postgres advisory locks</a> where necessary.</p>
+                <p class="fragment">Lets take a look at some <a target="_blank" href="https://github.com/sclasen/cloudplay/blob/master/app/processes/ContinuousProcess.scala">code!</a></p>
             </section>
             <section>
                 <h3></h3>
