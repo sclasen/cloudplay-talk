@@ -173,10 +173,10 @@ heroku config:push -o -a app-dev
               </code></pre>
             </section>
 
-            <section data-background="#111111" data-color="#ffffff">
-                <h3>on with it! (todo night theme switch)</h3>
+            <section>
+                <h3>on with it!</h3>
                 <ul>
-                    <li><h3>Continuous Deployment</h3></li>
+                    <li>Continuous Deployment</li>
                     <li>Functionality not fully provided by Play!</li>
                     <li>Visibility</li>
                 </ul>
@@ -244,19 +244,17 @@ heroku config:push -o -a app-dev
             </section>
 
             <section>
-                <h3>on with it! (todo night theme switch)</h3>
+                <h3>on with it!</h3>
                 <ul>
-                    <li>Continuous Deployment</li>
-                    <li><h3>Functionality not fully provided by Play!</h3></li>
-                    <li>Visibility</li>
+                    <li>Functionality not fully provided by Play!</li>
                 </ul>
             </section>
 
             <section>
                 <h3>Functionality not fully provided by Play!</h3>
-                <p class="fragment">Batch/Background Processing</p>
-                <p class="fragment">Evolutions/Migrations</p>
-                <p class="fragment">Credentials Handling/Encryption</p>
+                <p>Batch/Background Processing</p>
+                <p>Evolutions/Migrations</p>
+                <p>Credentials Handling/Encryption</p>
             </section>
             <section>
                 <h3>Batch/Background Processing</h3>
@@ -313,8 +311,59 @@ object Continuous extends ProcessType {
                 <p class="fragment">Lets take a look at some <a target="_blank" href="https://github.com/sclasen/cloudplay/blob/master/app/processes/ContinuousProcess.scala">code!</a></p>
             </section>
             <section>
+                <h3>Functionality not fully provided by Play!</h3>
+                <p>Evolutions/Migrations</p>
+                <p><img src="images/migration.jpg"></p>
+            </section>
+            <section>
+                <h3>Evolutions/Migrations</h3>
+                <p>Seldom mentioned Evolution features in play</p>
+                <p class="fragment">-DapplyDownEvolutions.database=true</p>
+                <p class="fragment">-Devolutions.useLocks=true</p>
+                <p class="fragment">* locks require a db that supports `select for update nowait`</p>
+            </section>
+            <section>
+                <h3>Evolutions/Migrations</h3>
+                <p>Evolutions: provided by play</p>
+                <p>Migrations: code/sql you write</p>
+            </section>
+            <section>
+                <h3>Evolutions/Migrations</h3>
+                <p>Hot Compatibility</p>
+                <p>So here’s the basic principle that allows you to avoid downtime:</p>
+                <p>any evolution being deployed should be compatible with the code that is already running.</p>
+            </section>
+            <section>
+                <h3>Evolutions/Migrations</h3>
+                <p>Hot Compatibility</p>
+                <p>In order to do so, you’ll usually split your deploy process in two steps:</p>
+                <p>Make the code compatible with the evolution you need to run</p>
+                <p>Run the evolution, run the migration, and remove any code written specifically for it</p>
+            </section>
+            <section>
+                <h3>Migrations</h3>
+                <p>How to write/run?</p>
+                <p>-Dapplication.global FTW again</p>
+                 <pre><code data-trim>
+ object Migration extends ProcessType {
+     override def onStart(app: Application) = {
+         log.info("Starting ProcessType: Migration")
+         start(app, "migration")
+         processes.MigrationProcess.start()
+     }
+ }
+
+ //add this to procfile
+ migration: bin/cloudplay -Dapplication.global=Migration
+</code></pre>
+            </section>
+            <section>
+                <h3>Migrations</h3>
+                <p>Run the migration with: `heroku run migration`</p>
+                <p class="fragment">Lets look at the code for <a target="_blank" href="https://github.com/sclasen/cloudplay/blob/master/app/processes/MigrationProcess.scala">processes.MigrationProcess.start()</a></p>
+            </section>
+            <section>
                 <h3></h3>
-                <p class="fragment"></p>
                 <p class="fragment"></p>
                 <p class="fragment"></p>
                 <p class="fragment"></p>
@@ -326,11 +375,16 @@ object Continuous extends ProcessType {
                 <p class="fragment"></p>
                 <p class="fragment"></p>
                 <p class="fragment"></p>
-                <p class="fragment"></p>
             </section>
             <section>
                 <h3></h3>
                 <p class="fragment"></p>
+                <p class="fragment"></p>
+                <p class="fragment"></p>
+                <p class="fragment"></p>
+            </section>
+            <section>
+                <h3></h3>
                 <p class="fragment"></p>
                 <p class="fragment"></p>
                 <p class="fragment"></p>
