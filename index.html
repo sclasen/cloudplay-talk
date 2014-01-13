@@ -269,13 +269,6 @@ heroku config:push -o -a app-dev
             </section>
             <section>
                 <h3>Batch/Background Processing</h3>
-                <p>How to keep things as simple as possible?</p>
-                <p class="fragment">-Dapplication.global FTW</p>
-                <p class="fragment">You have all your models, services, logic</p>
-                <p class="fragment">you have play akka etc</p>
-            </section>
-            <section>
-                <h3>Batch/Background Processing</h3>
                 <pre><code data-trim>
 web:           bin/cloudplay -Dapplication.global=Web
 continuous:    bin/cloudplay -Dapplication.global=Continuous
@@ -305,7 +298,7 @@ object Continuous extends ProcessType {
             </section>
             <section>
                 <h3>Batch/Background Processing</h3>
-                <p>Ok, great whats in this processes.ContinuousProcess.start() business?</p>
+                <p>Ok, great whats in this <br/>processes.ContinuousProcess.start()<br/>business?</p>
                 <p class="fragment">Lets call it an 'actor batch process'</p>
                 <p class="fragment">Run multiple instances, using <a target="_blank" href="https://github.com/sclasen/cloudplay/blob/master/app/services/LockService.scala">postgres advisory locks</a> where necessary.</p>
                 <p class="fragment">Lets take a look at some <a target="_blank" href="https://github.com/sclasen/cloudplay/blob/master/app/processes/ContinuousProcess.scala">code!</a></p>
@@ -320,7 +313,7 @@ object Continuous extends ProcessType {
                 <p>Seldom mentioned Evolution features in play</p>
                 <p class="fragment">-DapplyDownEvolutions.database=true</p>
                 <p class="fragment">-Devolutions.useLocks=true</p>
-                <p class="fragment">* locks require a db that supports `select for update nowait`</p>
+                <p class="fragment">* locks require a db that supports<br/> `select for update nowait`</p>
             </section>
             <section>
                 <h3>Evolutions/Migrations</h3>
@@ -331,13 +324,13 @@ object Continuous extends ProcessType {
                 <h3>Evolutions/Migrations</h3>
                 <p>Hot Compatibility</p>
                 <p>So here’s the basic principle that allows you to avoid downtime:</p>
-                <p>any evolution being deployed should be compatible with the code that is already running.</p>
+                <p>any evolution or migration being deployed should be compatible with the code that is already running.</p>
             </section>
             <section>
                 <h3>Evolutions/Migrations</h3>
                 <p>Hot Compatibility</p>
                 <p>In order to do so, you’ll usually split your deploy process in two steps:</p>
-                <p>Make the code compatible with the evolution you need to run</p>
+                <p>Make the code compatible with the evolution/migration you need to run</p>
                 <p>Run the evolution, run the migration, and remove any code written specifically for it</p>
             </section>
             <section>
@@ -360,35 +353,142 @@ object Continuous extends ProcessType {
             <section>
                 <h3>Migrations</h3>
                 <p>Run the migration with: `heroku run migration`</p>
-                <p class="fragment">Lets look at the code for <a target="_blank" href="https://github.com/sclasen/cloudplay/blob/master/app/processes/MigrationProcess.scala">processes.MigrationProcess.start()</a></p>
+                <p class="fragment">Lets look at the code for <br/><a target="_blank" href="https://github.com/sclasen/cloudplay/blob/master/app/processes/MigrationProcess.scala">processes.MigrationProcess.start()</a></p>
             </section>
             <section>
-                <h3></h3>
-                <p class="fragment"></p>
-                <p class="fragment"></p>
-                <p class="fragment"></p>
-                <p class="fragment"></p>
+                <h3>Functionality not fully provided by Play!</h3>
+                <p>Credentials Handling/Encryption</p>
+                <p><img src="images/safe.jpg"></p>
             </section>
             <section>
-                <h3></h3>
-                <p class="fragment"></p>
-                <p class="fragment"></p>
-                <p class="fragment"></p>
-                <p class="fragment"></p>
+                <h3>Credentials Handling/Encryption</h3>
+                <p>Generally two types of credentials in an app.</p>
+                <p class="fragment">User credentials/passwords that you dont need to know, only verify.</p>
+                <p class="fragment">Other credentials that you need to know in unencrypted form.</p>
             </section>
             <section>
-                <h3></h3>
-                <p class="fragment"></p>
-                <p class="fragment"></p>
-                <p class="fragment"></p>
-                <p class="fragment"></p>
+                <h3>Credentials Handling/Encryption</h3>
+                <p class="fragment">User's Passwords</p>
+                <p class="fragment">use bcrypt</p>
+                <p class="fragment">or the util methods in <a href="https://github.com/sclasen/play-extras">sclasen/play-extras</a></p>
+                <p class="fragment">which use bcrypt</p>
             </section>
             <section>
-                <h3></h3>
-                <p class="fragment"></p>
-                <p class="fragment"></p>
-                <p class="fragment"></p>
-                <p class="fragment"></p>
+                <h3>Credentials Handling/Encryption</h3>
+                <p class="fragment">User's Passwords</p>
+                <p class="fragment">CredentialsService.hashPassword</p>
+                <p class="fragment">CredentialsService.checkPasswordAgainstHash</p>
+            </section>
+            <section>
+                <h3>Credentials Handling/Encryption</h3>
+                <p>Credentials you need in unencrypted form</p>
+                <p class="fragment">database passwords, aws keys, api keys, etc</p>
+            </section>
+            <section>
+                <h3>Credentials Handling/Encryption</h3>
+                <p>Credentials you need in unencrypted form</p>
+                <p class="fragment">If an attacker has both your code and runtime config, you are basically hosed.</p>
+                <p class="fragment">So, make it such that if the attacker has only one or the other, you are safe</p>
+            </section>
+            <section>
+                <h3>Credentials Handling/Encryption</h3>
+                <p>Encrypting a credential</p>
+<pre><code data-trim>
+> sbt console //outputs omitted
+scala>  import com.heroku.play.api.libs.security._
+
+scala> val secret = "the secret password"
+
+scala> val secretKey = CredentialsService.generateKey
+
+scala> val keyMaskThatGoesInYourCodebase = CredentialsService.generateKey
+// add to application.conf   secret.key.mask=keyMaskThatGoesInYourCodebase
+scala> val maskedSecretKeyThatGoesInYourENV =
+    CredentialsService.maskKey(secretKey, keyMaskThatGoesInYourCodebase)
+// add to env  heroku config:set SECRET_KEY=maskedSecretKeyThatGoesInYourENV
+scala> val encryptedSecretThatGoesInYourENV =
+    CredentialsService.doEncryptCredential(secret, secretKey)
+// add to env  heroku config:set SECRET=encryptedSecretThatGoesInYourENV
+</code></pre>
+            </section>
+            <section>
+                <h3>Credentials Handling/Encryption</h3>
+                <p>Decrypting a credential</p>
+                <p>CredentialsService.decryptCredential takes the names of 2 env vars and 1 property from applicaiton.conf</p>
+<pre><code data-trim>
+> forego run sbt console //outputs omitted
+scala>  import com.heroku.play.api.libs.security._
+
+scala>  val secret =
+    CredentialsService.decryptCredential("SECRET",
+                                         "SECRET_KEY",
+                                         "secret.key.mask")
+</code></pre>
+                <p class="fragment">* there is also a doDecryptCredential form for encrypted values that arent/cant be stored in the env.</p>
+            </section>
+            <section>
+                <h3>on with it!</h3>
+                <ul>
+                    <li>Visibility</li>
+                </ul>
+            </section>
+            <section>
+                <h3>Visibility</h3>
+                <p class="fragment">Logs as Event Streams</p>
+                <p class="fragment">Request-Ids</p>
+                <p class="fragment">Splunk, Librato</p>
+                <p class="fragment">Actor Based Logback Appender</p>
+            </section>
+            <section>
+                <h3>Logs as Event Streams</h3>
+                <p class="fragment">Factor #11 from 12 Factors</p>
+                <p class="fragment">At scale you want to optimize more for machine readability</p>
+                <p class="fragment">We do this at heroku with `logfmt`</p>
+            </section>
+            <section>
+                <h3>Logs as Event Streams</h3>
+                <p class="fragment">Factor #11 from 12 Factors</p>
+                <p class="fragment">At scale you want to optimize more for machine readability</p>
+                <p class="fragment">We do this at heroku with `logfmt`</p>
+            </section>
+            <section>
+                <h3>Logs as Event Streams</h3>
+                <p>logfmt http://godoc.org/github.com/kr/logfmt</p>
+<pre><code data-trim>
+ident_byte = any byte greater than ' ', excluding '=' and '"'
+string_byte = any byte excluding '"' and '\'
+garbage = !ident_byte
+ident = ident_byte, { ident byte }
+key = ident
+value = ident | '"', { string_byte | '\', '"' }, '"'
+pair = key, '=', value | key, '=' | key
+message = { garbage, pair }, garbage
+</code></pre>
+            </section>
+            <section>
+                <h3>Logs as Event Streams</h3>
+<pre><code data-trim>
+//LOGFMT
+foo=bar a=14 baz="hello kitty" cool%story=bro f %^asdf
+
+//parsed to json
+{ "foo": "bar", "a": 14, "baz": "hello kitty",
+    "cool%story": "bro", "f": true, "%^asdf": true }
+</code></pre>
+            </section>
+            <section>
+                <h3>Logs as Event Streams</h3>
+                <p>Which is easier to process?</p>
+<pre><code data-trim>
+ERROR user scott@heroku.com is over the account-rate-limit
+
+
+error app=an-app at=over-account-limit user=scott@heroku.com
+</code></pre>
+            </section>
+            <section>
+                <h3>Visibility: Librato</h3>
+                <p>https://metrics.librato.com/share/dashboards/k4b5bhm8</p>
             </section>
             <!--
 
